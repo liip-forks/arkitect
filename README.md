@@ -89,6 +89,17 @@ To avoid using the default baseline file, you can use the `skip-baseline` option
 phparkitect check --skip-baseline
 ```
 
+### Line numbers in baseline
+
+By default, the baseline check also looks at line numbers of known violations.
+When a line before the offending line changes, the line numbers change and the check fails despite the baseline.
+
+With the optional flag `ignore-baseline-linenumbers`, you can ignore the line numbers of violations:
+
+```
+phparkitect check --ignore-baseline-linenumbers
+```
+
 ## Configuration
 
 Example of configuration file `phparkitect.php`

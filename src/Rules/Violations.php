@@ -106,14 +106,30 @@ class Violations implements \IteratorAggregate, \Countable, \JsonSerializable
         return $this->violations;
     }
 
-    public function remove(self $violations): void
+    /**
+     * @param Violations $violations Known violations from the baseline
+     * @param bool $ignoreBaselineLinenumbers If set to true, violations from the baseline are ignored for the same file even if the line number is different
+     */
+    public function remove(self $violations, bool $ignoreBaselineLinenumbers = false): void
     {
+        if ($ignoreBaselineLinenumbers) {
+            $comparisonFunction = static function (Violation $a, Violation $b): int {
+                if (($a->getFqcn() === $b->getFqcn()) && ($a->getError() === $b->getError())) {
+                    return 0;
+                }
+
+                return $a <=> $b;
+            };
+        } else {
+            $comparisonFunction = static function (Violation $a, Violation $b): int {
+                return $a <=> $b;
+            };
+        }
+
         $this->violations = array_values(array_udiff(
             $this->violations,
             $violations->violations,
-            static function (Violation $a, Violation $b): int {
-                return $a <=> $b;
-            }
+            $comparisonFunction
         ));
     }
 
